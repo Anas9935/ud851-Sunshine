@@ -15,6 +15,8 @@
  */
 package com.example.android.sunshine.utilities;
 
+import android.net.Uri;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -66,7 +68,15 @@ public final class NetworkUtils {
      */
     public static URL buildUrl(String locationQuery) {
         /** This will be implemented in a future lesson **/
-        return null;
+        URL url =null;
+        try{
+            Uri uri=Uri.parse(STATIC_WEATHER_URL).buildUpon()
+                    .appendQueryParameter(QUERY_PARAM,locationQuery).build();
+            url=new URL(uri.toString());
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+        return url;
     }
 
     /**
@@ -79,7 +89,15 @@ public final class NetworkUtils {
      */
     public static URL buildUrl(Double lat, Double lon) {
         /** This will be implemented in a future lesson **/
-        return null;
+        URL url=null;
+        try{
+            Uri uri=Uri.parse(STATIC_WEATHER_URL).buildUpon()
+                    .appendQueryParameter(LAT_PARAM,lat.toString()).appendQueryParameter(LON_PARAM,lon.toString()).build();
+            url=new URL(uri.toString());
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        return url;
     }
 
     /**

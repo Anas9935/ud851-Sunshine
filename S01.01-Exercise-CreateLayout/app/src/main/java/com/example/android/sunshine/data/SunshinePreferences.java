@@ -29,8 +29,8 @@ public class SunshinePreferences {
      * In order to uniquely pinpoint the location on the map when we launch the
      * map intent, we store the latitude and longitude.
      */
-    public static final String PREF_COORD_LAT = "coord_lat";
-    public static final String PREF_COORD_LONG = "coord_long";
+    public static final String PREF_COORD_LAT = "28.7041";
+    public static final String PREF_COORD_LONG = "77.1025";
 
     /*
      * Before you implement methods to return your REAL preference for location,
