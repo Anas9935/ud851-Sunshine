@@ -15,35 +15,51 @@
  */
 package com.example.android.sunshine;
 
+import android.content.Intent;
+import android.net.UrlQuerySanitizer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.sunshine.data.SunshinePreferences;
 import com.example.android.sunshine.utilities.NetworkUtils;
+import com.example.android.sunshine.utilities.OpenWeatherJsonUtils;
 
 import java.io.IOException;
 import java.net.URL;
 
-public class MainActivity extends AppCompatActivity {
-TextView mWeatherTextView;
+public class MainActivity extends AppCompatActivity implements ForecastAdapter.ForecastAdapterOnClickHandler {
+    private RecyclerView recyclerView;
+    private ForecastAdapter adapter;
+
 ProgressBar mProgressBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forecast);
 
-        mWeatherTextView=(TextView)findViewById(R.id.tv_weather_data);
+        recyclerView=(RecyclerView)findViewById(R.id.recView);
+        RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(this);
+        ((LinearLayoutManager) layoutManager).setOrientation(LinearLayoutManager.VERTICAL);
+        ((LinearLayoutManager) layoutManager).setReverseLayout(false);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setHasFixedSize(true);
+        adapter=new ForecastAdapter(this,this);
+        recyclerView.setAdapter(adapter);
+
         mProgressBar=(ProgressBar)findViewById(R.id.progress);
         LoadWeatherData();
     }
-    public class FetchWeatherTask extends AsyncTask<URL,Void,String>{
+    public class FetchWeatherTask extends AsyncTask<String,Void,String[]>{
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -51,36 +67,54 @@ ProgressBar mProgressBar;
         }
 
         @Override
-        protected String doInBackground(URL... urls) {
+        protected String[] doInBackground(String...locs) {
             String json_resp=null;
-            try{
-                json_resp=NetworkUtils.getResponseFromHttpUrl(urls[0]);
-            }catch (IOException e){
-                e.printStackTrace();
+            String[] jsonAraay;
+            String location=null;
+            if(locs.length>0){
+                location=locs[0];
             }
-            return json_resp;
+            URL weatherURL=NetworkUtils.buildUrl(location);
+            try{
+                json_resp=NetworkUtils.getResponseFromHttpUrl(weatherURL);
+                jsonAraay=OpenWeatherJsonUtils.getSimpleWeatherStringsFromJson(MainActivity.this,json_resp);
+                return jsonAraay;
+            }catch (Exception e){
+                e.printStackTrace();
+                return null;
+            }
+
         }
 
         @Override
-        protected void onPostExecute(String s) {
+        protected void onPostExecute(String[] s) {
             mProgressBar.setVisibility(View.INVISIBLE);
-            if(s!=null&&s.length()>0){
-                mWeatherTextView.setText(s);
+            if(s!=null&&s.length>0){
+                recyclerView.setVisibility(View.VISIBLE);
+                adapter.setWeatherData(s);
             }else if(s==null){
-                mWeatherTextView.setText(R.string.error_message);
+                recyclerView.setVisibility(View.INVISIBLE);
             }
         }
     }
     public void LoadWeatherData(){
-        URL url=NetworkUtils.buildUrl(Double.valueOf(SunshinePreferences.PREF_COORD_LAT),Double.valueOf(SunshinePreferences.PREF_COORD_LONG));
-        new FetchWeatherTask().execute(url);
+      //  URL url=NetworkUtils.buildUrl(Double.valueOf(SunshinePreferences.PREF_COORD_LAT),Double.valueOf(SunshinePreferences.PREF_COORD_LONG));
+       String location=SunshinePreferences.getPreferredWeatherLocation(this);
+        new FetchWeatherTask().execute(location);
+    }
+
+    @Override
+    public void onItemclick(String s) {
+        Intent intent=new Intent(MainActivity.this,DetailedActivity.class);
+        intent.putExtra("String",s);
+        startActivity(intent);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
             case R.id.refresh_action:{
-                mWeatherTextView.setText("");
+               adapter.setWeatherData(null);
                 LoadWeatherData();
                 return true;
             }
