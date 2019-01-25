@@ -15,7 +15,8 @@ public class DetailedActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detailed);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if(getSupportActionBar()!=null)
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         Intent extra=getIntent();
         s=extra.getStringExtra("String");
         textView=(TextView)findViewById(R.id.tv);
@@ -45,6 +46,10 @@ public class DetailedActivity extends AppCompatActivity {
             case R.id.action_share:{
                 share();
             return true;
+            }
+            case R.id.settings_action:{
+                Intent intent=new Intent(DetailedActivity.this,Settings_activity.class);
+                startActivity(intent);
             }
             default: return super.onOptionsItemSelected(item);
         }

@@ -7,4 +7,10 @@
     app:showAsAction="ifRoom"
     android:title="Refresh"
     />
+    <item
+        android:id="@+id/settings_action"
+        android:icon="@drawable/ic_settings_black_24dp"
+        android:title="Settings"
+        app:showAsAction="ifRoom"
+        />
 </menu>

@@ -141,4 +141,11 @@
     <!--Used by SunshinePreferences-->
     <!-- - - - - - - - - - - - - - -->
     <!--NONE-->
+
+    <string name="pref_unit_key">unit_key</string>
+    <string name="pref_edit_key">edit_key</string>
+    <string name="pref_cel">Celsius</string>
+    <string name="pref_far">Fahrenheit</string>
+    <string name="pref_Loc_Default">Mountain View CA</string>
+
 </resources>

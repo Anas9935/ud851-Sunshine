@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="pref_units"
+        >
+        <item>@string/pref_cel</item>
+        <item>@string/pref_far</item>
+    </array>
+    <array name="pref_units_values">
+        <item>@string/pref_cel</item>
+        <item>@string/pref_far</item>
+    </array>
+
+
+</resources>
